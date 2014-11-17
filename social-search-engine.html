@@ -1,0 +1,89 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>      
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  		  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  		  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">  		
+    </head>
+    <style type="text/css">   
+        .main{
+          width: 500px;top: 50px;margin: auto;position: relative;
+        }
+        #search_text{
+          margin-bottom: 20px;
+        }
+        .title{
+          font-size: 14px;opacity: 1;font-weight: bold;
+        }
+        .description{
+          font-size: 12px;opacity: 0.8;
+        }
+        .user_details{
+          font-size: 12px;font-weight: bold;
+        }
+        .icon{
+          width: 15px;height: 15px;float: left;
+        }
+        a{
+          margin-right: 10px;
+        }
+        .dp{
+          height: 25px;width: 25px;
+        }
+    </style>
+    <body>
+	    <div class="main">		   
+	       <input type="text" class="form-control" id="search_text" placeholder="Enter your #HASHTAGS/@MENTIONS/TOPICS for search...">
+	       <span></span>
+	    </div>			
+          <script type="text/javascript">
+            $( document ).ready(function() {
+              $('#search_text').on('keypress', function (event) {
+                 if(event.which == '13')
+                 {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://api2.socialmention.com/search',
+                        data: { q: $(this).val(), f: 'jsonp', t: 'all' },
+                        jsonpCallback: 'jsonp',
+                        dataType: 'jsonp',
+                        success: function(results){
+                          console.log(results)
+                          var lang = '';
+                         
+                          $.each(results['items'], function() 
+                          {
+                        lang +="<div class='well'>";
+                        
+                        lang +="<p class='user_details'>";
+
+                        lang +="<img class='icon' src='"+this['favicon']+"' alt='Source' title='Source'>&nbsp;&nbsp;";           
+                                             
+                        if(this['user']!=null)
+                          lang += this['user']+"&nbsp;&nbsp;";
+
+                        if(this['source']=='facebook')
+                          lang +="<img class='dp' src='http://graph.facebook.com/"+this['user_id']+"/picture' alt='dp' title='dp'>";
+                        lang +="<p/>";
+
+                        if(this['title']!=null)
+                          lang +="<p class='title'>" + this['title'] + "</p>";
+
+                        if(this['description']!=null)
+                          lang +="<p class='description'>"+ this['description']+"</p>";
+
+                        lang+="<p class='share'><a href='http://www.facebook.com/sharer.php?u="+this['link']+"' target='_blank'><img width='20px'src='http://www.toptalent.in/images/fb-24x24.png'></a><a href='http://www.linkedin.com/shareArticle?mini=true&amp;url="+this['link']+"' target='_new'><img width='20px' src='http://www.toptalent.in/images/in-24x24.png'></a><a href='http://twitter.com/share?text="+this['title']+" "+this['link']+"' target='_blank'><img width='20px' src='http://www.toptalent.in/images/twitter-24x24.png'></a></p>";
+                        
+                        lang +="</div>";
+
+                    });
+                    $('span').html(lang);
+                      }
+                  });
+                 }
+               });        
+            });
+          </script>
+    </body>
+</html>
